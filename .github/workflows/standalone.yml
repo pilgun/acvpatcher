@@ -31,7 +31,7 @@ jobs:
       run: dotnet publish ACVPatcher/ACVPatcher.csproj -r ${{ matrix.target.runtime }} -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -c Release --self-contained
     - name: Copy license
       run: cp LICENSE ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/LICENSE.txt
-          - name: Copy notice
+    - name: Copy notice
       run: cp NOTICE ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/NOTICE.txt
     - name: Artifact Upload ${{ matrix.target.runtime }}
       if: ${{ github.event_name != 'release' }}
