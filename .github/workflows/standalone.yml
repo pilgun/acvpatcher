@@ -54,4 +54,3 @@ jobs:
             asset_path: ./release.zip
             asset_name: ${{ matrix.target.artifact }}
             asset_content_type: application/zip
-            tag_name: ${{ github.event.release.tag_name }}
