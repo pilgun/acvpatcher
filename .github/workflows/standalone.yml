@@ -1,4 +1,4 @@
-name: Standalone
+name: release
 
 on:
   release:
@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.204
+
       - name: Restore dependencies
         run: dotnet restore
       - name: Set version
@@ -43,14 +44,10 @@ jobs:
       - name: Compress Release Artifact
         if: ${{ github.event_name == 'release' }}
         run: 'Compress-Archive ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/* ./release.zip'
-      - name: Upload Release Asset
+
+      -name: upload artifact
         if: ${{ github.event_name == 'release' }}
-        id: upload_release_asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        uses: actions/upload-artifact@v4
         with:
-            upload_url: ${{ format('https://uploads.github.com/repos/{0}/{1}/releases/{2}/assets', github.repository_owner, github.repository, github.event.release.id) }}
-            asset_path: ./release.zip
-            asset_name: ${{ matrix.target.artifact }}
-            asset_content_type: application/zip
+          name: ${{ matrix.target.artifact }}
+          path: ./release.zip
