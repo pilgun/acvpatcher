@@ -3,9 +3,7 @@ name: Standalone
 on:
   release:
     types:
-      - published
-  push:
-  pull_request:
+      - created
 
 jobs:
   build:
