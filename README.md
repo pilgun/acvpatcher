@@ -57,4 +57,4 @@ Here is an example of XML added to patched AndroidManifest
 
 # Acknowledgement
 
-ACVPatcher is build on top of QuestPatcher modules developed by @Lauriethefish
+ACVPatcher is built on top of QuestPatcher modules initially developed by @Lauriethefish
