@@ -50,7 +50,7 @@ jobs:
           path: ./release.zip
       - name: Upload Asset
         if: ${{ github.event_name == 'release' }}
-        uses: actions/upload-release-asset@v4
+        uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./release.zip
