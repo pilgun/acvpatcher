@@ -43,17 +43,6 @@ jobs:
       - name: Compress Release Artifact
         if: ${{ github.event_name == 'release' }}
         run: 'Compress-Archive ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/* ./release.zip'
-      - name: Create Release
-        if: ${{ github.event_name == 'release' && steps.create_release.outputs.release_created != 'true' }}
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
-        with:
-          tag_name: ${{ github.event.release.tag_name }}
-          release_name: ${{ github.event.release.tag_name }}
-          draft: false
-          prerelease: false
       - name: Upload Release Asset
         if: ${{ github.event_name == 'release' }}
         id: upload_release_asset
@@ -61,7 +50,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./release.zip
-          asset_name: ${{ matrix.target.artifact }}
-          asset_content_type: application/zip
+            upload_url: ${{ format('https://uploads.github.com/repos/{0}/{1}/releases/{2}/assets', github.repository_owner, github.repository, github.event.release.id) }}
+            asset_path: ./release.zip
+            asset_name: ${{ matrix.target.artifact }}
+            asset_content_type: application/zip
+            tag_name: ${{ github.event.release.tag_name }}
