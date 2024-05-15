@@ -54,10 +54,6 @@ jobs:
           release_name: ${{ github.event.release.tag_name }}
           draft: false
           prerelease: false
-      permissions:
-        contents: write
-        packages: write
-        issues: write
       - name: Upload Release Asset
         if: ${{ github.event_name == 'release' }}
         id: upload_release_asset
