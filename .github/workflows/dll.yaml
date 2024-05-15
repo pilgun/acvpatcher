@@ -3,7 +3,7 @@ name: ACVPatcher Release
 on:
   release:
     types:
-      - created
+    - published
 
 jobs:
   build:
