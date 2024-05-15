@@ -51,6 +51,8 @@ jobs:
       - name: Upload Asset
         if: ${{ github.event_name == 'release' }}
         uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           upload_url: ${{ github.event.release.upload_url }}
           asset_path: ./release.zip
