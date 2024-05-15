@@ -48,3 +48,13 @@ jobs:
         with:
           name: ${{ matrix.target.artifact }}
           path: ./release.zip
+      - name: Upload Asset
+        if: ${{ github.event_name == 'release' }}
+        uses: actions/upload-release-asset@v4
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./release.zip
+          asset_name: ${{ matrix.target.artifact }}
+          asset_content_type: application/zip
+          asset_label: ${{ matrix.target.artifact }}
+          asset_state: uploaded
