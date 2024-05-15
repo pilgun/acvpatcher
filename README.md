@@ -2,32 +2,36 @@
 
 ACVPatcher is a CLI tool to patch AndroidManifest and DEX classes inside an APK without reassembling resources. ACVPatcher is a replacement of Apktool for the ACVTool purpuses to improve its repackaging success rate.
 
+## Installation
+
+- Checkout [Releases](https://github.com/pilgun/acvpatcher/releases) for the last prebuilt binary
+- `chmod +x ACVPatcher` to make it executable
 
 ## Usage
 
-ACVPatcher updates DEX classes and/or AndroidManifest inside the APK file. ACVPatcher may insert new permissions, a broadcast receiver, and instrumentation tag into AndroidManifest through corresponding options.
+ACVPatcher updates DEX classes and/or AndroidManifest inside the APK file. ACVPatcher may insert new permissions, a broadcast receiver, and instrumentation tag into AndroidManifest through corresponding options at once. Finally, this APK file gets signed and zip aligned.
 
-### Add permission to AndroidManifest
+- Adding permissions to AndroidManifest
 
-```shell
-$ acvpatcher --permission android.permission.WRITE_EXTERNAL_STORAGE android.permission.READ_EXTERNAL_STORAGE
-```
+    ```shell
+    $ acvpatcher --permission android.permission.WRITE_EXTERNAL_STORAGE android.permission.READ_EXTERNAL_STORAGE
+    ```
 
-### Add receiver to AndroidManifest
+- Adding a receiver to AndroidManifest
 
-This example will add the AcvReceiver receiver tag with two intent filters (`calculate` and `snap`)
+    This example will add the AcvReceiver receiver tag with two intent filters (`calculate` and `snap`)
 
-```shell
-$ acvpatcher --receiver tool.acv.AcvReceiver:tool.acv.calculate tool.acv.AcvReceiver:tool.acv.snap
-```
+    ```shell
+    $ acvpatcher --receiver tool.acv.AcvReceiver:tool.acv.calculate tool.acv.AcvReceiver:tool.acv.snap
+    ```
 
-### Rewrite DEX files
+- Rewritting DEX files
 
-```shell
-$ acvpatcher --class ./classes.dex ./classes2.dex
-```
+    ```shell
+    $ acvpatcher --class ./classes.dex ./classes2.dex
+    ```
 
-### AndroidManifest Patching
+## AndroidManifest Patching
 
 Here is an example of XML added to patched AndroidManifest
 
