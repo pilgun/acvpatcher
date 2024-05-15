@@ -16,14 +16,12 @@ jobs:
 
     runs-on: windows-latest
     name: Build for ${{ matrix.target.runtime }}
-
     steps:
       - uses: actions/checkout@v4
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.204
-
       - name: Restore dependencies
         run: dotnet restore
       - name: Set version
@@ -44,8 +42,7 @@ jobs:
       - name: Compress Release Artifact
         if: ${{ github.event_name == 'release' }}
         run: 'Compress-Archive ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/* ./release.zip'
-
-      -name: upload artifact
+      - name: Upload Artifact
         if: ${{ github.event_name == 'release' }}
         uses: actions/upload-artifact@v4
         with:
