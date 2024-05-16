@@ -1,4 +1,7 @@
+
 # ACVPatcher
+
+[![Build](https://github.com/pilgun/acvpatcher/actions/workflows/build.yml/badge.svg?branch=main&event=push)](https://github.com/pilgun/acvpatcher/actions/workflows/build.yml)
 
 ACVPatcher is a CLI tool to patch AndroidManifest and DEX classes inside an APK without reassembling resources. ACVPatcher is a replacement of Apktool for the ACVTool purpuses to improve its repackaging success rate.
 
