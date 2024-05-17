@@ -14,14 +14,16 @@ namespace ACVPatcher
         private IEnumerable<string>? Permission { get; set; }
         private string? Instrumentation { get; set; }
         private IEnumerable<string>? Receivers { get; set; }
+        public bool IsJarSign { get; }
 
-        public PatchingManager(string apkpath, IEnumerable<string>? classpaths, IEnumerable<string>? permissions, string? instrumentationTag, IEnumerable<string>? receivers)
+        public PatchingManager(string apkpath, IEnumerable<string>? classpaths, IEnumerable<string>? permissions, string? instrumentationTag, IEnumerable<string>? receivers, bool isJarSign)
         {
             ApkPath = apkpath;
             ClassPath = classpaths;
             Permission = permissions;
             Instrumentation = instrumentationTag;
             Receivers = receivers;
+            IsJarSign = isJarSign;
         }
 
         public async Task Run()
@@ -40,7 +42,8 @@ namespace ACVPatcher
             {
                 await PatchManifest(apk);
             }
-
+            // this option disables jarsigner signing within dispose call
+            apk.IsToJarSign = IsJarSign;
             await apk.DisposeAsync();
         }
 

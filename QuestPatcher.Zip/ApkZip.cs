@@ -65,6 +65,8 @@ namespace QuestPatcher.Zip
         /// </summary>
         public ICollection<string> Entries => _centralDirectoryRecords.Keys;
 
+        public bool IsToJarSign { get; set; }
+
         private readonly Dictionary<string, CentralDirectoryFileHeader> _centralDirectoryRecords;
         private Dictionary<string, string>? _existingHashes;
         private long _postFilesOffset;
@@ -351,7 +353,7 @@ namespace QuestPatcher.Zip
             _stream.Position = _postFilesOffset;
             long localHeaderOffset = _stream.Position;
 
-            byte[] fileNameBytes = ((EntryFlags) 0).GetStringEncoding().GetBytes(fileName);
+            byte[] fileNameBytes = ((EntryFlags)0).GetStringEncoding().GetBytes(fileName);
 
             // Move past where the local file header for this entry will go.
             _stream.Position += 30 + fileNameBytes.Length;
@@ -385,8 +387,8 @@ namespace QuestPatcher.Zip
             var (centralDirectoryHeader, localHeader) = CreateFileHeaders(
                 fileName,
                 compressionMethod,
-                (uint) compressedSize,
-                (uint) uncompressedSize,
+                (uint)compressedSize,
+                (uint)uncompressedSize,
                 crc32,
                 localHeaderOffset
             );
@@ -419,7 +421,7 @@ namespace QuestPatcher.Zip
             _stream.Position = _postFilesOffset;
             long localHeaderOffset = _stream.Position;
 
-            byte[] fileNameBytes = ((EntryFlags) 0).GetStringEncoding().GetBytes(fileName);
+            byte[] fileNameBytes = ((EntryFlags)0).GetStringEncoding().GetBytes(fileName);
             _stream.Position += 30 + fileNameBytes.Length;
 
             byte[]? extraField = compressionLevel == null ? CreateAlignmentField(_stream.Position) : null;
@@ -462,8 +464,8 @@ namespace QuestPatcher.Zip
             var (centralDirectoryHeader, localHeader) = CreateFileHeaders(
                 fileName,
                 compressionMethod,
-                (uint) compressedSize,
-                (uint) uncompressedSize,
+                (uint)compressedSize,
+                (uint)uncompressedSize,
                 crc32,
                 localHeaderOffset
             );
@@ -496,7 +498,7 @@ namespace QuestPatcher.Zip
         /// <returns>An extra field that will align the entry, or null if <paramref name="postLocalHeader"/> is already correctly aligned.</returns>
         private byte[]? CreateAlignmentField(long postLocalHeader)
         {
-            int offset = (int) postLocalHeader % StoreAlign;
+            int offset = (int)postLocalHeader % StoreAlign;
             if (offset == 0)
             {
                 // Alignment already correct
@@ -507,17 +509,17 @@ namespace QuestPatcher.Zip
             // .. and at least 2 for the short which stores the level of alignment
             long afterMinLength = postLocalHeader + 6;
             // Calculate how many more bytes we need after the minimum length of the extra field.
-            int bytesToAdd = (int) (StoreAlign - (afterMinLength % StoreAlign)) % StoreAlign;
+            int bytesToAdd = (int)(StoreAlign - (afterMinLength % StoreAlign)) % StoreAlign;
 
             using var fieldMs = new MemoryStream();
             var memory = new ZipMemory(fieldMs);
 
             memory.Write(AlignmentExtraDataHeader);
-            memory.Write((ushort) (bytesToAdd + 2)); // 2 more bytes needed to store alignment level
-            memory.Write((ushort) StoreAlign);
+            memory.Write((ushort)(bytesToAdd + 2)); // 2 more bytes needed to store alignment level
+            memory.Write((ushort)StoreAlign);
             for (int i = 0; i < bytesToAdd; i++)
             {
-                memory.Write((byte) 0);
+                memory.Write((byte)0);
             }
 
             byte[] field = fieldMs.ToArray();
@@ -578,7 +580,7 @@ namespace QuestPatcher.Zip
                 DiskNumberStart = 0,
                 InternalFileAttributes = 0,
                 ExternalFileAttributes = 0,
-                LocalHeaderOffset = (uint) localHeaderOffset
+                LocalHeaderOffset = (uint)localHeaderOffset
             };
 
             return (centralDirectoryHeader, localHeader);
@@ -593,7 +595,7 @@ namespace QuestPatcher.Zip
         {
             if (compressionLevel != null)
             {
-                return (new DeflateStream(_stream, (CompressionLevel) compressionLevel, true), CompressionMethod.Deflate);
+                return (new DeflateStream(_stream, (CompressionLevel)compressionLevel, true), CompressionMethod.Deflate);
             }
             else
             {
@@ -737,7 +739,12 @@ namespace QuestPatcher.Zip
         private void Save()
         {
             // _certificate and _privateKey are non-null due to the default certificate assigned in the constructor.
-            JarSigner.SignApkFile(this, _certificate!, _privateKey!, _existingHashes);
+
+            if (IsToJarSign)
+            {
+                // jarsigner breaks some APKs, not recommended to use it.
+                JarSigner.SignApkFile(this, _certificate!, _privateKey!, _existingHashes);
+            }
 
             _stream.Position = _postFilesOffset;
             V2Signer.SignAndCompleteZipFile(_centralDirectoryRecords.Values, _stream, _certificate!, _privateKey!);

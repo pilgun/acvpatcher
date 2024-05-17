@@ -22,22 +22,31 @@ class Options
 
     [Option('a', "apkpath", Required = true, HelpText = "Path to the APK file to patch.")]
     public required string ApkPath { get; set; }
+
+    [Option("silent", Required = false, HelpText = "Silent mode.")]
+    public bool Silent { get; set; }
+
+    [Option("jarsigner", Required = false, HelpText = "Use jarsigner signature mode (not recommended).")]
+    public bool JarSign { get; set; }
+
 }
 
 class Program
 {
     static async Task Main(string[] args)
     {
-        // args = "-p android.permission.WRITE_EXTERNAL_STORAGE -i tool.acv.AcvInstrumentation -r tool.acv.AcvReceiver:tool.acv.calculate -a /Users/ap/projects/dblt/apks/debloatapp/base.apk".Split(' ');
-        Console.WriteLine(string.Join(" ", args));
+        // args = "-p android.permission.WRITE_EXTERNAL_STORAGE -i tool.acv.AcvInstrumentation -r tool.acv.AcvReceiver:tool.acv.calculate -a ./base.apk".Split(' ');
         var options = await Parser.Default.ParseArguments<Options>(args).WithParsedAsync(async options =>
         {
-            Console.WriteLine($"Class Path: {(options.ClassPath != null ? string.Join(", ", options.ClassPath) : string.Empty)}");
-            Console.WriteLine($"Permission: {(options.Permission != null ? string.Join(", ", options.Permission) : string.Empty)}");
-            Console.WriteLine($"Instrumentation: {options.Instrumentation}");
-            Console.WriteLine($"Receivers: {(options.Receivers != null ? string.Join(", ", options.Receivers) : string.Empty)}");
-            Console.WriteLine($"APK Path: {options.ApkPath}");
-            var patchingManager = new PatchingManager(options.ApkPath, options.ClassPath, options.Permission, options.Instrumentation, options.Receivers);
+            if (!options.Silent)
+            {
+                Console.WriteLine($"Class Path: {(options.ClassPath != null ? string.Join(", ", options.ClassPath) : string.Empty)}");
+                Console.WriteLine($"Permission: {(options.Permission != null ? string.Join(", ", options.Permission) : string.Empty)}");
+                Console.WriteLine($"Instrumentation: {options.Instrumentation}");
+                Console.WriteLine($"Receivers: {(options.Receivers != null ? string.Join(", ", options.Receivers) : string.Empty)}");
+                Console.WriteLine($"APK Path: {options.ApkPath}");
+            }
+            var patchingManager = new PatchingManager(options.ApkPath, options.ClassPath, options.Permission, options.Instrumentation, options.Receivers, options.JarSign);
             await patchingManager.Run();
         });
     }
