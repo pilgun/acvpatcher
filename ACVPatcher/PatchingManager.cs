@@ -64,7 +64,21 @@ namespace ACVPatcher
                 var existingPermissions = AxmlManager.GetExistingChildren(manifest, "uses-permission");
                 foreach (var permission in Permission)
                 {
-                    if (existingPermissions.Contains(permission)) { continue; } // Do not add existing permissions
+                    // Do not add exising permissions, but remove maxSdkVersion from WRITE_EXTERNAL_STORAGE permission
+                    if (existingPermissions.Contains(permission))
+                    {
+                        if (permission == "android.permission.WRITE_EXTERNAL_STORAGE")
+                        {
+                            var writePermissions = manifest.Children.Single(p => p.Name == "uses-permission" && p.Attributes.Any(a => a.Value.ToString() == "android.permission.WRITE_EXTERNAL_STORAGE"));
+                            if (writePermissions.Attributes.Any(p => p.Name == "maxSdkVersion"))
+                            {
+                                Console.WriteLine($"Removing maxSdkVersion from {permission} permission.");
+                                writePermissions.Attributes.Remove(writePermissions.Attributes.Single(p => p.Name == "maxSdkVersion"));
+                                modified = true;
+                            }
+                        }
+                        continue;
+                    }
                     AddPermissionToManifest(manifest, permission);
                     modified = true;
                 }

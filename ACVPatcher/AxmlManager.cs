@@ -20,7 +20,7 @@ namespace ACVPatcher
 
                 var nameAttributes = element.Attributes.Where(attribute => attribute.Namespace == AndroidNamespaceUri && attribute.Name == "name").ToList();
                 // Only add children with the name attribute
-                if (nameAttributes.Count > 0) { result.Add((string) nameAttributes[0].Value); }
+                if (nameAttributes.Count > 0) { result.Add((string)nameAttributes[0].Value); }
             }
 
             return result;
