@@ -41,18 +41,19 @@ Here is an example of XML added to patched AndroidManifest
 ```xml
 <manifest ...>
     ...
-<application>
-    ...
-    <receiver
-        android:name="tool.acv.AcvReceiver"
-        android:enabled="true"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="tool.acv.snap" />
-            <action android:name="tool.acv.calculate" />
-        </intent-filter>
-    </receiver>
-</application>
+    <application>
+        ...
+        <receiver
+            android:name="tool.acv.AcvReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="tool.acv.snap" />
+                <action android:name="tool.acv.calculate" />
+                <action android:name="tool.acv.flush" />
+            </intent-filter>
+        </receiver>
+    </application>
     <instrumentation
         android:name="tool.acv.AcvInstrumentation"
         android:targetPackage="package.name" />
