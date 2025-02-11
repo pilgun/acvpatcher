@@ -12,7 +12,7 @@
     <PackageProjectUrl>https://github.com/pilgun/ACVPatcher/tree/main/ACVPatcher</PackageProjectUrl>
     <PackageLicenseExpression>Apache</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/pilgun/acvpatcher.git</RepositoryUrl>
-    <Copyright>Copyright 2024 Aleksandr Pilgun</Copyright>
+    <Copyright>Copyright 2025 Aleksandr Pilgun</Copyright>
     <RepositoryType>git</RepositoryType>
     <PackageTags>axml, android, xml, acvtool</PackageTags>
   </PropertyGroup>

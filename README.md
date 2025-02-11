@@ -12,12 +12,12 @@ ACVPatcher is a CLI tool to patch AndroidManifest and DEX classes inside an APK 
 
 ## Usage
 
-ACVPatcher updates DEX classes and/or AndroidManifest inside the APK file. ACVPatcher may insert new permissions, a broadcast receiver, and instrumentation tag into AndroidManifest through corresponding options at once. Finally, this APK file gets signed and zip aligned.
+ACVPatcher updates DEX classes and/or AndroidManifest inside the APK file. ACVPatcher may insert new permissions, a broadcast receiver, and instrumentation tag into AndroidManifest through corresponding options at once. The APK is signed and zip aligned.
 
 - Adding permissions to AndroidManifest
 
     ```shell
-    $ acvpatcher --permission android.permission.WRITE_EXTERNAL_STORAGE android.permission.READ_EXTERNAL_STORAGE
+    $ acvpatcher -a ./base.apk --permission android.permission.WRITE_EXTERNAL_STORAGE android.permission.READ_EXTERNAL_STORAGE
     ```
 
 - Adding a receiver to AndroidManifest
@@ -25,13 +25,18 @@ ACVPatcher updates DEX classes and/or AndroidManifest inside the APK file. ACVPa
     This example will add the AcvReceiver receiver tag with two intent filters (`calculate` and `snap`)
 
     ```shell
-    $ acvpatcher --receiver tool.acv.AcvReceiver:tool.acv.calculate tool.acv.AcvReceiver:tool.acv.snap
+    $ acvpatcher -a ./base.apk --receiver tool.acv.AcvReceiver:tool.acv.calculate tool.acv.AcvReceiver:tool.acv.snap
     ```
 
 - Rewritting DEX files
 
     ```shell
-    $ acvpatcher --class ./classes.dex ./classes2.dex
+    $ acvpatcher -a ./base.apk --class ./classes.dex ./classes2.dex
+    ```
+
+- Simply resign the app
+    ```shell
+    $ acvpatcher -a ./base.apk
     ```
 
 ## AndroidManifest Patching
@@ -65,4 +70,4 @@ Here is an example of XML added to patched AndroidManifest
 
 # Acknowledgement
 
-ACVPatcher is built on top of QuestPatcher modules initially developed by @Lauriethefish
+ACVPatcher is built on top of QuestPatcher modules initially developed by @Lauriethefish.
