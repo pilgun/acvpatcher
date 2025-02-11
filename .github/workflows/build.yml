@@ -12,8 +12,8 @@ jobs:
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 8.0.204
+        dotnet-version: 9.0.x
     - name: Restore dependencies
       run: dotnet restore
     - name: Publish project
-      run: dotnet publish ACVPatcher/ACVPatcher.csproj -c Release --self-contained
+      run: dotnet publish ACVPatcher/ACVPatcher.csproj -r linux-x64 -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -c Release --self-contained -p:Version=$(cat ./VERSION)
