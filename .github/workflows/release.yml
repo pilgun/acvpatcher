@@ -22,27 +22,27 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.204
+          dotnet-version: 9.0.x
       - name: Restore dependencies
         run: dotnet restore
       - name: Set version
         if: ${{ github.event_name == 'release' }}
         run: echo ${{ github.event.release.tag_name }} | Out-File -NoNewline -FilePath ./VERSION
       - name: Build ${{ matrix.target.runtime }}
-        run: dotnet publish ACVPatcher/ACVPatcher.csproj -r ${{ matrix.target.runtime }} -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -c Release --self-contained -p:AssemblyVersion=$(cat ./VERSION)
+        run: dotnet publish ACVPatcher/ACVPatcher.csproj -r ${{ matrix.target.runtime }} -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -c Release --self-contained -p:Version=$(cat ./VERSION)
       - name: Copy license
-        run: cp LICENSE ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/LICENSE.txt
+        run: cp LICENSE ACVPatcher/bin/Release/net9.0/${{ matrix.target.runtime }}/publish/LICENSE.txt
       - name: Copy notice
-        run: cp NOTICE ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/NOTICE.txt
+        run: cp NOTICE ACVPatcher/bin/Release/net9.0/${{ matrix.target.runtime }}/publish/NOTICE.txt
       - name: Upload Artifact
         if: ${{ github.event_name != 'release' }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.target.runtime }}
-          path: ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/
+          path: ACVPatcher/bin/Release/net9.0/${{ matrix.target.runtime }}/publish/
       - name: Compress Release Artifact
         if: ${{ github.event_name == 'release' }}
-        run: 'Compress-Archive ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/* ./release.zip'
+        run: 'Compress-Archive ACVPatcher/bin/Release/net9.0/${{ matrix.target.runtime }}/publish/* ./release.zip'
       - name: Upload Artifact
         if: ${{ github.event_name == 'release' }}
         uses: actions/upload-artifact@v4
