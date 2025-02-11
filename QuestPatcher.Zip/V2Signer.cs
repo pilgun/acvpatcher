@@ -193,7 +193,7 @@ namespace QuestPatcher.Zip
                 sha.TransformBlock(chunkMagicStream.GetBuffer(), 0, 4 + 1, null, -1);
 
                 // .. then finalise the hash with the full chunk data
-                sourceData.Read(chunkBuffer, 0, bytesInChunk);
+                ReadChunk(sourceData, chunkBuffer, bytesInChunk);
                 sha.TransformFinalBlock(chunkBuffer, 0, bytesInChunk);
 
                 output.Write(sha.Hash!);
@@ -203,5 +203,19 @@ namespace QuestPatcher.Zip
             return chunkCount;
         }
 
+        private static void ReadChunk(Stream source, byte[] buffer, int count)
+        {
+            int bytesRead;
+            int totalBytesRead = 0;
+            while (totalBytesRead < count && (bytesRead = source.Read(buffer, totalBytesRead, count - totalBytesRead)) > 0)
+            {
+                totalBytesRead += bytesRead;
+            }
+
+            if (totalBytesRead != count)
+            {
+                throw new EndOfStreamException($"Could not read the full chunk. Expected {count} bytes, but only read {totalBytesRead} bytes.");
+            }
+        }
     }
 }

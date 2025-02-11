@@ -26,7 +26,16 @@ namespace QuestPatcher.Zip
 
         private void FillBuffer(int bytes)
         {
-            _stream.Read(_buffer, 0, bytes);
+            int bytesRead = 0;
+            while (bytesRead < bytes)
+            {
+                int read = _stream.Read(_buffer, bytesRead, bytes - bytesRead);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException("End of stream reached before filling the buffer.");
+                }
+                bytesRead += read;
+            }
         }
 
         private void WriteBuffer(int bytes)
@@ -82,7 +91,16 @@ namespace QuestPatcher.Zip
         public byte[] ReadBytes(int length)
         {
             byte[] buffer = new byte[length];
-            _stream.Read(buffer, 0, length);
+            int bytesRead = 0;
+            while (bytesRead < length)
+            {
+                int read = _stream.Read(buffer, bytesRead, length - bytesRead);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException("End of stream reached before reading the requested number of bytes.");
+                }
+                bytesRead += read;
+            }
 
             return buffer;
         }
@@ -178,7 +196,16 @@ namespace QuestPatcher.Zip
 
         private async Task FillBufferAsync(int bytes)
         {
-            await _stream.ReadAsync(_buffer, 0, bytes);
+            int bytesRead = 0;
+            while (bytesRead < bytes)
+            {
+                int read = await _stream.ReadAsync(_buffer, bytesRead, bytes - bytesRead);
+                if (read == 0)
+                {
+                    throw new EndOfStreamException("End of stream reached before filling the buffer.");
+                }
+                bytesRead += read;
+            }
         }
 
         private async Task WriteBufferAsync(int bytes)
@@ -244,10 +271,25 @@ namespace QuestPatcher.Zip
         public async Task<byte[]> ReadBytesAsync(int length)
         {
             byte[] buffer = new byte[length];
-            await _stream.ReadAsync(buffer, 0, length);
+            await ReadBytesInternalAsync(buffer, length);
 
             return buffer;
         }
+        
+        private async Task ReadBytesInternalAsync(byte[] buffer, int length)
+        {
+            int bytesRead = 0;
+            while (bytesRead < length)
+            {
+            int read = await _stream.ReadAsync(buffer, bytesRead, length - bytesRead);
+            if (read == 0)
+            {
+                throw new EndOfStreamException("End of stream reached before reading the requested number of bytes.");
+            }
+            bytesRead += read;
+            }
+        }
+
 
         /// <summary>
         /// Reads a string from a ZIP record.
