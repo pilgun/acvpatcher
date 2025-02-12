@@ -15,7 +15,7 @@ jobs:
           - {"runtime": 'osx-x64', "artifact": "ACVPatcher-osx-x64.zip"}
           - {"runtime": 'osx-arm64', "artifact": "ACVPatcher-osx-arm64.zip"}
 
-    runs-on: windows-latest
+    runs-on: macos-latest
     name: Build for ${{ matrix.target.runtime }}
     steps:
       - uses: actions/checkout@v4
@@ -27,28 +27,16 @@ jobs:
         run: dotnet restore
       - name: Set version
         if: ${{ github.event_name == 'release' }}
-        run: echo ${{ github.event.release.tag_name }} | Out-File -NoNewline -FilePath ./VERSION
+        run: echo ${{ github.event.release.tag_name }} > ./VERSION
       - name: Build ${{ matrix.target.runtime }}
         run: dotnet publish ACVPatcher/ACVPatcher.csproj -r ${{ matrix.target.runtime }} -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -c Release --self-contained -p:Version=$(cat ./VERSION)
       - name: Copy license
         run: cp LICENSE ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/LICENSE.txt
       - name: Copy notice
         run: cp NOTICE ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/NOTICE.txt
-      # - name: Upload Artifact
-      #   if: ${{ github.event_name != 'release' }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ matrix.target.runtime }}
-      #     path: ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/
       - name: Compress Release Artifact
         if: ${{ github.event_name == 'release' }}
-        run: 'Compress-Archive ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/* ./release.zip'
-      # - name: Upload Artifact
-      #   if: ${{ github.event_name == 'release' }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ matrix.target.artifact }}
-      #     path: ./release.zip
+        run: zip -r ./release.zip ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/*
       - name: Upload Asset
         if: ${{ github.event_name == 'release' }}
         uses: actions/upload-release-asset@v1
