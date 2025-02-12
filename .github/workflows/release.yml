@@ -36,7 +36,9 @@ jobs:
         run: cp NOTICE ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/NOTICE.txt
       - name: Compress Release Artifact
         if: ${{ github.event_name == 'release' }}
-        run: zip -r ./release.zip ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish/*
+        run: |
+          cd ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish
+          zip -r ../../../../../../../release.zip *
       - name: Upload Asset
         if: ${{ github.event_name == 'release' }}
         uses: actions/upload-release-asset@v1
