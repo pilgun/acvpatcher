@@ -34,7 +34,7 @@ ACVPatcher updates DEX classes and/or AndroidManifest inside the APK file. ACVPa
     $ acvpatcher -a ./base.apk --class ./classes.dex ./classes2.dex
     ```
 
-- Simply resign the app
+- Simply re-sign the app
     ```shell
     $ acvpatcher -a ./base.apk
     ```
