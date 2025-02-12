@@ -38,7 +38,7 @@ jobs:
         if: ${{ github.event_name == 'release' }}
         run: |
           cd ACVPatcher/bin/Release/net8.0/${{ matrix.target.runtime }}/publish
-          zip -r ../../../../../../../release.zip *
+          zip -r ../../../../../../release.zip *
       - name: Upload Asset
         if: ${{ github.event_name == 'release' }}
         uses: actions/upload-release-asset@v1
