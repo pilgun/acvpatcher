@@ -39,6 +39,16 @@ ACVPatcher updates DEX classes and/or AndroidManifest inside the APK file. ACVPa
     $ acvpatcher -a ./base.apk
     ```
 
+- Remove a permission (e.g. <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>). Multiple permission names can be specified, separated by spaces.
+    ```shell
+    $ acvpatcher -a ./base.apk --remove-persmission android.permission.WRITE_EXTERNAL_STORAGE
+    ```
+
+- Remove any tag under the <application> tag (e.g. <activity android:name="com.app.MainActivity"/>). Multiple tags can be specified, separated by spaces.
+    ```shell
+    $ acvpatcher -a ./base.apk --remove-tag com.app.MainActivity
+    ```
+
 ## AndroidManifest Patching
 
 Here is an example of XML added to patched AndroidManifest

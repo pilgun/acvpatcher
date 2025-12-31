@@ -14,9 +14,12 @@ namespace ACVPatcher
         private IEnumerable<string>? Permission { get; set; }
         private string? Instrumentation { get; set; }
         private IEnumerable<string>? Receivers { get; set; }
+        private IEnumerable<string>? PermissionsToRemove { get; set; }
+        private IEnumerable<string>? ApplicationTagsToRemove { get; set; }
         public bool IsJarSign { get; }
+        
 
-        public PatchingManager(string apkpath, IEnumerable<string>? classpaths, IEnumerable<string>? permissions, string? instrumentationTag, IEnumerable<string>? receivers, bool isJarSign)
+        public PatchingManager(string apkpath, IEnumerable<string>? classpaths, IEnumerable<string>? permissions, string? instrumentationTag, IEnumerable<string>? receivers, bool isJarSign, IEnumerable<string>? removePermissions, IEnumerable<string>? removeApplicationTags)
         {
             ApkPath = apkpath;
             ClassPath = classpaths;
@@ -24,6 +27,8 @@ namespace ACVPatcher
             Instrumentation = instrumentationTag;
             Receivers = receivers;
             IsJarSign = isJarSign;
+            PermissionsToRemove = removePermissions;
+            ApplicationTagsToRemove = removeApplicationTags;
         }
 
         public async Task Run()
@@ -38,7 +43,7 @@ namespace ACVPatcher
                     await AddClassToApk(apk, classPath);
                 }
             }
-            if (Permission != null || Instrumentation != null || Receivers != null)
+            if (Permission != null || Instrumentation != null || Receivers != null || PermissionsToRemove != null || ApplicationTagsToRemove != null)
             {
                 await PatchManifest(apk);
             }
@@ -59,6 +64,20 @@ namespace ACVPatcher
             ms.Position = 0;
             var manifest = AxmlLoader.LoadDocument(ms);
             string package = AxmlManager.GetPackage(manifest);
+            if (PermissionsToRemove != null)
+            {
+                var existingPermissions = AxmlManager.GetExistingChildren(manifest, "uses-permission");
+                foreach (var permission in PermissionsToRemove)
+                {
+                    if (existingPermissions.Contains(permission))
+                    {
+                        var permissionElement = manifest.Children.Single(p => p.Name == "uses-permission" && p.Attributes.Any(a => a.Value.ToString() == permission));
+                        manifest.Children.Remove(permissionElement);
+                        Console.WriteLine($"Removed permission: {permission}");
+                        modified = true;
+                    }
+                }
+            }
             if (Permission != null)
             {
                 var existingPermissions = AxmlManager.GetExistingChildren(manifest, "uses-permission");
@@ -122,6 +141,23 @@ namespace ACVPatcher
                         AddIntentAction(receiverIntentFilter, action!);
                         modified = true;
                     }
+                }
+            }
+            // Remove any tag like activity, receiver, service, provider under the application tag
+            if(ApplicationTagsToRemove != null)
+            {
+                var appElement = manifest.Children.Single(child => child.Name == "application");
+                foreach (var tag in ApplicationTagsToRemove)
+                {
+                    var tagParts = tag.Split(':');
+                    var tagName = tagParts[0];
+                    var tagValue = tagParts[1];
+
+                    var existingElement = appElement.Children.SingleOrDefault(child => child.Name == tagName && child.Attributes.Any(attr => attr.Name == "name" && attr.Value.ToString() == tagValue));
+                    if (existingElement == null) { continue; }
+                    appElement.Children.Remove(existingElement);
+                    Console.WriteLine($"Removed {tagName}: {tagValue}");
+                    modified = true;
                 }
             }
             if (modified)
