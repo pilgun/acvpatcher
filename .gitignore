@@ -2,6 +2,7 @@
 bin/
 obj/
 *.qmod
+.vscode/
 
 # Windows installer output/extracted files
 installer/inno/

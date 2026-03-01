@@ -36,14 +36,14 @@ namespace ACVPatcher
             using var apkStream = File.Open(ApkPath, FileMode.Open);
             var apk = await ApkZip.OpenAsync(apkStream);
 
-            if (ClassPath != null)
+            if (ClassPath?.Any() == true)
             {
                 foreach (var classPath in ClassPath)
                 {
                     await AddClassToApk(apk, classPath);
                 }
             }
-            if (Permission != null || Instrumentation != null || Receivers != null || PermissionsToRemove != null || ApplicationTagsToRemove != null)
+            if (Permission?.Any() == true || Instrumentation != null || Receivers?.Any() == true || PermissionsToRemove?.Any() == true || ApplicationTagsToRemove?.Any() == true)
             {
                 await PatchManifest(apk);
             }
@@ -64,7 +64,7 @@ namespace ACVPatcher
             ms.Position = 0;
             var manifest = AxmlLoader.LoadDocument(ms);
             string package = AxmlManager.GetPackage(manifest);
-            if (PermissionsToRemove != null)
+            if (PermissionsToRemove?.Any() == true)
             {
                 var existingPermissions = AxmlManager.GetExistingChildren(manifest, "uses-permission");
                 foreach (var permission in PermissionsToRemove)
@@ -78,7 +78,7 @@ namespace ACVPatcher
                     }
                 }
             }
-            if (Permission != null)
+            if (Permission?.Any() == true)
             {
                 var existingPermissions = AxmlManager.GetExistingChildren(manifest, "uses-permission");
                 foreach (var permission in Permission)
@@ -107,7 +107,7 @@ namespace ACVPatcher
                 AddInstrumentationToManifest(manifest, Instrumentation, package);
                 modified = true;
             }
-            if (Receivers != null)
+            if (Receivers?.Any() == true)
             {
                 var appElement = manifest.Children.Single(child => child.Name == "application");
                 // var existingReceivers = AxmlManager.GetExistingChildren(appElement, "receiver");
@@ -144,7 +144,7 @@ namespace ACVPatcher
                 }
             }
             // Remove any tag like activity, receiver, service, provider under the application tag
-            if(ApplicationTagsToRemove != null)
+            if(ApplicationTagsToRemove?.Any() == true)
             {
                 var appElement = manifest.Children.Single(child => child.Name == "application");
                 foreach (var tag in ApplicationTagsToRemove)
